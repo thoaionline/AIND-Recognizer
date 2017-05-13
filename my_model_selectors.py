@@ -76,9 +76,28 @@ class SelectorBIC(ModelSelector):
         """
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-        # TODO implement model selection based on BIC scores
-        raise NotImplementedError
+        best_score = float('inf')
+        best_model = None
 
+        # Number of elements
+        p = len(self.lengths)
+
+        for n in range(self.min_n_components, self.max_n_components):
+            try:
+                logN = math.log(n)
+                model = self.base_model(n, self.X, self.lengths)
+                logL = model.score(self.X, self.lengths)
+            except ValueError:
+                # Bug with hmmlearn for large N
+                continue
+
+            score = -2 * logL + p * logN
+
+            if score < best_score:
+                best_score = score
+                best_model = model
+
+        return best_model
 
 class SelectorDIC(ModelSelector):
     ''' select best model based on Discriminative Information Criterion
@@ -92,8 +111,29 @@ class SelectorDIC(ModelSelector):
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-        # TODO implement model selection based on DIC scores
-        raise NotImplementedError
+        best_score = float('inf')
+        best_model = None
+
+        # Number of elements
+        p = len(self.lengths)
+
+        for n in range(self.min_n_components, self.max_n_components):
+            try:
+                logN = math.log(n)
+                model = self.base_model(n, self.X, self.lengths)
+                logL = model.score(self.X, self.lengths)
+            except ValueError:
+                # Bug with hmmlearn for large N
+                continue
+
+            score = 0 #TODO: Implement this
+            raise NotImplementedError
+
+            if score < best_score:
+                best_score = score
+                best_model = model
+
+        return best_model
 
 
 class SelectorCV(ModelSelector):
@@ -105,6 +145,7 @@ class SelectorCV(ModelSelector):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # Special handling when there's only 1 sample
+        print("There are {} samples".format(len(self.lengths)))
         if len(self.lengths) == 1:
             return self.base_model(1, self.X, self.lengths)
 
@@ -137,6 +178,7 @@ class SelectorCV(ModelSelector):
                     total_logLs += logL
                     count += 1
                 except ValueError:
+                    # Bug with hmmlearn for large N
                     pass
 
             if count > 0:
