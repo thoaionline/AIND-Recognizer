@@ -102,34 +102,44 @@ class SelectorCV(ModelSelector):
     '''
 
     def select(self):
-        print("Splits = {}".format(len(self.lengths)))
-        split_method = KFold(len(self.lengths))
-
-        # This should never stay the same, we hope
-        best_n = self.max_n_components
-
-        for n in range(self.min_n_components,self.max_n_components):
-            print('N = {}'.format(n))
-            # Create all the models with n components for cross validation
-            totalLogLs = 0
-            for train_indexes, test_indexes in split_method.split(self.sequences):
-                print("Train indexes: {} Test indexes: {}".format(train_indexes,test_indexes))
-                # Let's do some training!
-                (train_X, train_lengths) = combine_sequences(train_indexes, self.sequences)
-                model = self.base_model(n, train_X, train_lengths)
-                # Now test the fire on this sub model
-                (test_X, test_lengths) = combine_sequences(test_indexes, self.sequences)
-                logL = model.score(test_X, test_lengths)
-                totalLogLs += logL
-            # Store the log likelihood for this value of N
-            #print("Sum log likelihood for N={} is {}".format(n,totalLogLs))
-
-        print('Moving on')
-        # Now extract the best N and generate a model with all the training data we have
-
-        return self.base_model(best_n, self.X, self.lengths)
-
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-        # TODO implement model selection using CV
-        raise NotImplementedError
+        # print("Splits = {}".format(len(self.lengths)))
+        split_method = KFold(min(len(self.lengths), 3))
+
+        # This should never stay the same, we hope
+        best_n = 0
+        best_avg_log_l = float('-inf')
+
+        for n in range(self.min_n_components, self.max_n_components):
+            # print('N = {}'.format(n))
+            # Create all the models with n components for cross validation
+            total_logLs = 0
+            count = 0
+            for train_indexes, test_indexes in split_method.split(self.sequences):
+                try:
+                    # print("Train indexes: {} Test indexes: {}".format(train_indexes, test_indexes))
+                    # Let's do some training!
+                    (train_X, train_lengths) = combine_sequences(train_indexes, self.sequences)
+                    model = self.base_model(n, train_X, train_lengths)
+
+                    # If we cannot train the model
+                    if not model:
+                        break  # Stop trying and navigate to the outer loop already, count should be 0
+
+                    # Now test the fire on this sub model
+                    (test_X, test_lengths) = combine_sequences(test_indexes, self.sequences)
+                    logL = model.score(test_X, test_lengths)
+                    total_logLs += logL
+                    count += 1
+                except ValueError:
+                    pass
+
+            if count > 0:
+                avgLogL = total_logLs / count
+                if avgLogL > best_avg_log_l:
+                    best_n = n
+                    best_avg_log_l = avgLogL
+
+        # Now extract the best N and generate a model with all the training data we have
+        return self.base_model(best_n, self.X, self.lengths) if best_n > 0 else None
