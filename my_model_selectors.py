@@ -104,6 +104,10 @@ class SelectorCV(ModelSelector):
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+        # Special handling when there's only 1 sample
+        if len(self.lengths) == 1:
+            return self.base_model(1, self.X, self.lengths)
+
         # print("Splits = {}".format(len(self.lengths)))
         split_method = KFold(min(len(self.lengths), 3))
 
