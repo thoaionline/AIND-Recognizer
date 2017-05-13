@@ -31,13 +31,13 @@ class ModelSelector(object):
     def select(self):
         raise NotImplementedError
 
-    def base_model(self, num_states):
+    def base_model(self, num_states, X, lengths):
         # with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         # warnings.filterwarnings("ignore", category=RuntimeWarning)
         try:
             hmm_model = GaussianHMM(n_components=num_states, covariance_type="diag", n_iter=1000,
-                                    random_state=self.random_state, verbose=False).fit(self.X, self.lengths)
+                                    random_state=self.random_state, verbose=False).fit(X, lengths)
             if self.verbose:
                 print("model created for {} with {} states".format(self.this_word, num_states))
             return hmm_model
@@ -58,7 +58,7 @@ class SelectorConstant(ModelSelector):
         :return: GaussianHMM object
         """
         best_num_components = self.n_constant
-        return self.base_model(best_num_components)
+        return self.base_model(best_num_components, self.X, self.lengths)
 
 
 class SelectorBIC(ModelSelector):
@@ -102,6 +102,33 @@ class SelectorCV(ModelSelector):
     '''
 
     def select(self):
+        print("Splits = {}".format(len(self.lengths)))
+        split_method = KFold(len(self.lengths))
+
+        # This should never stay the same, we hope
+        best_n = self.max_n_components
+
+        for n in range(self.min_n_components,self.max_n_components):
+            print('N = {}'.format(n))
+            # Create all the models with n components for cross validation
+            totalLogLs = 0
+            for train_indexes, test_indexes in split_method.split(self.sequences):
+                print("Train indexes: {} Test indexes: {}".format(train_indexes,test_indexes))
+                # Let's do some training!
+                (train_X, train_lengths) = combine_sequences(train_indexes, self.sequences)
+                model = self.base_model(n, train_X, train_lengths)
+                # Now test the fire on this sub model
+                (test_X, test_lengths) = combine_sequences(test_indexes, self.sequences)
+                logL = model.score(test_X, test_lengths)
+                totalLogLs += logL
+            # Store the log likelihood for this value of N
+            #print("Sum log likelihood for N={} is {}".format(n,totalLogLs))
+
+        print('Moving on')
+        # Now extract the best N and generate a model with all the training data we have
+
+        return self.base_model(best_n, self.X, self.lengths)
+
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection using CV
