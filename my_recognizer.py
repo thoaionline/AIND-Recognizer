@@ -19,7 +19,30 @@ def recognize(models: dict, test_set: SinglesData):
    """
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     probabilities = []
-    guesses = []
-    # TODO implement the recognizer
-    # return probabilities, guesses
-    raise NotImplementedError
+    guesses = ["" for x in range(test_set.num_items)]
+    # guesses = np.full(test_set.num_items, ' ') # Empty string doesn't work here. Probably numpy bug.
+    word_probabilities = [float('-inf') for x in range(test_set.num_items)]
+
+    # Let's build the probabilities first
+    for word, model in models.items():
+        model_probabilities = {}  # Probabilities for this model/word
+        for item in range(test_set.num_items):
+            # Score this test sequence
+            x, lengths = test_set.get_item_Xlengths(item)  # There's only one X,length in each test item
+            try:
+                logL = model.score(x, lengths)
+                model_probabilities[word] = logL
+
+                # Update the guesses
+                if logL > word_probabilities[item]:
+                    word_probabilities[item] = logL
+                    guesses[item] = word
+            except ValueError:
+                # HMM bug
+                pass
+
+        # Add tho the list of model probabilities
+        probabilities.append(model_probabilities)
+
+    # print(probabilities, guesses)
+    return (probabilities, guesses)

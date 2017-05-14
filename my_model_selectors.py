@@ -178,7 +178,7 @@ class SelectorCV(ModelSelector):
                     total_logLs += logL
                     count += 1
                 except ValueError:
-                    # Bug with hmmlearn for large N
+                    # Bug with hmmlearn for large N and not enough data frames
                     pass
 
             if count > 0:
@@ -186,6 +186,7 @@ class SelectorCV(ModelSelector):
                 if avgLogL > best_avg_log_l:
                     best_n = n
                     best_avg_log_l = avgLogL
+                    # print('Best average logL {} with N={}'.format(best_avg_log_l, best_n))
 
         # Now extract the best N and generate a model with all the training data we have
         return self.base_model(best_n, self.X, self.lengths) if best_n > 0 else None
