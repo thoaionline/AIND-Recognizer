@@ -77,7 +77,7 @@ class SelectorBIC(ModelSelector):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         best_score = float('inf')
-        best_model = None
+        best_model = self.base_model(self.n_constant, self.X, self.lengths)
 
         # Number of elements
         p = len(self.lengths)
@@ -89,6 +89,9 @@ class SelectorBIC(ModelSelector):
                 logL = model.score(self.X, self.lengths)
             except ValueError:
                 # Bug with hmmlearn for large N
+                continue
+            except AttributeError:
+                # Model couldn't be trained
                 continue
 
             score = -2 * logL + p * logN
