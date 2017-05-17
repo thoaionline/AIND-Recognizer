@@ -129,7 +129,7 @@ class SelectorDIC(ModelSelector):
 
         # We can't work with less than 2 words
         if word_count < 2:
-            return self.base_model(self.random_state, self.X, self.lengths)
+            return self.base_model(self.n_constant, self.X, self.lengths)
 
         for n in range(self.min_n_components, self.max_n_components):
             try:
@@ -143,9 +143,9 @@ class SelectorDIC(ModelSelector):
                 score = 0
                 for word, (x, lengths) in self.hwords.items():
                     # print("Scoring against {} and {}".format(x, lengths))
-                    x_length_score = model.score(x, lengths)
+                    test_score = model.score(x, lengths)
                     multiplier = -1 if word != self.this_word else (word_count - 1)
-                    score += x_length_score * multiplier
+                    score += test_score * multiplier
 
             except ValueError:
                 # Bug with hmmlearn for large N
@@ -154,9 +154,6 @@ class SelectorDIC(ModelSelector):
             if score > best_score:
                 best_score = score
                 best_model = model
-
-        if not best_model:
-            print("Could not find best model for {}".format(self.this_word))
 
         return best_model if best_model else self.base_model(self.n_constant, self.X, self.lengths)
 
