@@ -27,6 +27,7 @@ def recognize(models: dict, test_set: SinglesData):
         best_probability = float('-inf')
         best_guess = ""
         for word, model in models.items():
+            print("Model for {} is {}".format(word, model))
             x, lengths = test_set.get_item_Xlengths(item)
             current_probabilities[word] = float('-inf')
             try:

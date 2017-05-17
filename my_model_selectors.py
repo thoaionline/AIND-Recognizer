@@ -75,9 +75,10 @@ class SelectorBIC(ModelSelector):
         :return: GaussianHMM object
         """
         warnings.filterwarnings("ignore", category=DeprecationWarning)
+        # warnings.filterwarnings("ignore", category=RuntimeWarning)
 
         best_score = float('inf')
-        best_model = self.base_model(self.n_constant, self.X, self.lengths)
+        best_model = None
 
         # Number of elements
         p = len(self.lengths)
@@ -100,7 +101,8 @@ class SelectorBIC(ModelSelector):
                 best_score = score
                 best_model = model
 
-        return best_model
+        return best_model if best_model else self.base_model(self.n_constant, self.X, self.lengths)
+
 
 class SelectorDIC(ModelSelector):
     ''' select best model based on Discriminative Information Criterion
@@ -113,30 +115,50 @@ class SelectorDIC(ModelSelector):
 
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
+        # warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-        best_score = float('inf')
+        best_score = float('-inf')
         best_model = None
 
-        # Number of elements
-        p = len(self.lengths)
+        # score = (M-1) * DIC = [(M-1)* logL of against current word] - Sum(LogL against other words)
+        # = M * (logL against current word) - <logL against all words>
+        # Let's avoid computing logL against current word twice though, even if it's more convenient
+
+        # Word count
+        word_count = len(self.lengths)
+
+        # We can't work with less than 2 words
+        if word_count < 2:
+            return self.base_model(self.random_state, self.X, self.lengths)
 
         for n in range(self.min_n_components, self.max_n_components):
             try:
-                logN = math.log(n)
+                # Generate the model
                 model = self.base_model(n, self.X, self.lengths)
-                logL = model.score(self.X, self.lengths)
+
+                if not model:
+                    continue
+
+                # Score the model
+                score = 0
+                for word, (x, lengths) in self.hwords.items():
+                    # print("Scoring against {} and {}".format(x, lengths))
+                    x_length_score = model.score(x, lengths)
+                    multiplier = -1 if word != self.this_word else (word_count - 1)
+                    score += x_length_score * multiplier
+
             except ValueError:
                 # Bug with hmmlearn for large N
                 continue
 
-            score = 0 #TODO: Implement this
-            raise NotImplementedError
-
-            if score < best_score:
+            if score > best_score:
                 best_score = score
                 best_model = model
 
-        return best_model
+        if not best_model:
+            print("Could not find best model for {}".format(self.this_word))
+
+        return best_model if best_model else self.base_model(self.n_constant, self.X, self.lengths)
 
 
 class SelectorCV(ModelSelector):
@@ -146,9 +168,10 @@ class SelectorCV(ModelSelector):
 
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
+        # warnings.filterwarnings("ignore", category=RuntimeWarning)
 
         # Special handling when there's only 1 sample
-        print("There are {} samples".format(len(self.lengths)))
+        # print("There are {} samples".format(len(self.lengths)))
         if len(self.lengths) == 1:
             return self.base_model(1, self.X, self.lengths)
 
@@ -156,7 +179,7 @@ class SelectorCV(ModelSelector):
         split_method = KFold(min(len(self.lengths), 3))
 
         # This should never stay the same, we hope
-        best_n = 0
+        best_n = self.random_state
         best_avg_log_l = float('-inf')
 
         for n in range(self.min_n_components, self.max_n_components):
