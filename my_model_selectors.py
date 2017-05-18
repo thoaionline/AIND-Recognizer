@@ -176,7 +176,7 @@ class SelectorCV(ModelSelector):
         split_method = KFold(min(len(self.lengths), 3))
 
         # This should never stay the same, we hope
-        best_n = self.random_state
+        best_n = 2
         best_avg_log_l = float('-inf')
 
         for n in range(self.min_n_components, self.max_n_components):
