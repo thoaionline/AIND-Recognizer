@@ -80,14 +80,15 @@ class SelectorBIC(ModelSelector):
         best_score = float('inf')
         best_model = None
 
-        # Number of elements
-        p = len(self.lengths)
-
-        for n in range(self.min_n_components, self.max_n_components):
+        for n_components in range(self.min_n_components, self.max_n_components):
             try:
-                logN = math.log(n)
-                model = self.base_model(n, self.X, self.lengths)
+                n_features = self.X.shape[1]
+                n_params = n_components * (n_components - 1) + 2 * n_features * n_components
+                logN = np.log(self.X.shape[0])
+
+                model = self.base_model(n_components, self.X, self.lengths)
                 logL = model.score(self.X, self.lengths)
+
             except ValueError:
                 # Bug with hmmlearn for large N
                 continue
@@ -95,7 +96,7 @@ class SelectorBIC(ModelSelector):
                 # Model couldn't be trained
                 continue
 
-            score = -2 * logL + p * logN
+            score = -2 * logL + n_params * logN
 
             if score < best_score:
                 best_score = score
@@ -139,21 +140,29 @@ class SelectorDIC(ModelSelector):
                 if not model:
                     continue
 
-                # Score the model
-                score = 0
-                for word, (x, lengths) in self.hwords.items():
-                    # print("Scoring against {} and {}".format(x, lengths))
-                    test_score = model.score(x, lengths)
-                    multiplier = -1 if word != self.this_word else (word_count - 1)
-                    score += test_score * multiplier
+                antiLogL = 0.0
+                logL = 0  # This is guaranteed to change
+                count = 0
+                for word in self.hwords:
+                    X, lengths = self.hwords[word]
+                    if word == self.this_word:
+                        logL = model.score(X, lengths)
+                    else:
+                        antiLogL += model.score(X, lengths)
+                        count += 1
+
+                # Normalise
+                antiLogL /= float(count)
+
+                score = logL - antiLogL
+
+                if score > best_score:
+                    best_score = score
+                    best_model = model
 
             except ValueError:
                 # Bug with hmmlearn for large N
                 continue
-
-            if score > best_score:
-                best_score = score
-                best_model = model
 
         return best_model if best_model else self.base_model(self.n_constant, self.X, self.lengths)
 
