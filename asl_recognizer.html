@@ -15737,7 +15737,7 @@ feature sets.  The test simply looks for some valid values but is not exhaustive
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>....
 ----------------------------------------------------------------------
-Ran 4 tests in 0.017s
+Ran 4 tests in 0.025s
 
 OK
 </pre>
@@ -17516,11 +17516,11 @@ Train fold indices:[0 1 2 3] Test fold indices:[4 5]
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Training complete for FISH with 13 states with time 0.44769242377972296 seconds
-Training complete for BOOK with 6 states with time 3.626483210462503 seconds
-Training complete for VEGETABLE with 2 states with time 1.4016823315288223 seconds
-Training complete for FUTURE with 2 states with time 3.3695116521527506 seconds
-Training complete for JOHN with 12 states with time 32.95019257291558 seconds
+<pre>Training complete for FISH with 13 states with time 0.8486276932850146 seconds
+Training complete for BOOK with 6 states with time 6.829932969850062 seconds
+Training complete for VEGETABLE with 2 states with time 2.4701580129019307 seconds
+Training complete for FUTURE with 2 states with time 4.703519092748284 seconds
+Training complete for JOHN with 12 states with time 52.565376618420395 seconds
 </pre>
 </div>
 </div>
@@ -17563,11 +17563,11 @@ Training complete for JOHN with 12 states with time 32.95019257291558 seconds
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Training complete for FISH with 5 states with time 0.3028994776886833 seconds
-Training complete for BOOK with 12 states with time 1.646944650644798 seconds
-Training complete for VEGETABLE with 14 states with time 0.6502137877387781 seconds
-Training complete for FUTURE with 14 states with time 1.9063047531080528 seconds
-Training complete for JOHN with 14 states with time 16.53794549647229 seconds
+<pre>Training complete for FISH with 5 states with time 0.4641325290400147 seconds
+Training complete for BOOK with 8 states with time 2.339711344083497 seconds
+Training complete for VEGETABLE with 9 states with time 0.8398308503035423 seconds
+Training complete for FUTURE with 9 states with time 2.6335635095559553 seconds
+Training complete for JOHN with 14 states with time 23.767945784867464 seconds
 </pre>
 </div>
 </div>
@@ -17608,11 +17608,11 @@ Training complete for JOHN with 14 states with time 16.53794549647229 seconds
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Training complete for FISH with 3 states with time 0.8298610685870926 seconds
-Training complete for BOOK with 13 states with time 5.445286496903307 seconds
-Training complete for VEGETABLE with 14 states with time 4.96270339267295 seconds
-Training complete for FUTURE with 13 states with time 5.300196069213257 seconds
-Training complete for JOHN with 14 states with time 25.765869339602702 seconds
+<pre>Training complete for FISH with 3 states with time 1.3610960438897877 seconds
+Training complete for BOOK with 13 states with time 4.924255179952667 seconds
+Training complete for VEGETABLE with 14 states with time 3.5427925107328377 seconds
+Training complete for FUTURE with 13 states with time 5.135374275703413 seconds
+Training complete for JOHN with 14 states with time 29.755365829280322 seconds
 </pre>
 </div>
 </div>
@@ -17636,7 +17636,12 @@ Training complete for JOHN with 14 states with time 25.765869339602702 seconds
 <p>BIC:</p>
 <ul>
 <li>Advantage: Each model can be trained independently. The logic does not depend on number of samples.</li>
-<li>Disadvantage: Does not take into account the relationship with other models. i.e. </li>
+<li>Disadvantage: Does not take into account the relationship with negative sequences and thus does not give relative indication when scoring a sequence against different models</li>
+</ul>
+<p>DIC:</p>
+<ul>
+<li>Advantage: Trained model takes into consideration the relative strengths of the model against negative (non-matching) data.</li>
+<li>Disadvantage: Only works with at least 2 models.</li>
 </ul>
 
 </div>
@@ -17675,7 +17680,7 @@ Training complete for JOHN with 14 states with time 25.765869339602702 seconds
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>....
 ----------------------------------------------------------------------
-Ran 4 tests in 47.274s
+Ran 4 tests in 63.616s
 
 OK
 </pre>
@@ -17908,7 +17913,7 @@ Video  Recognized                                                    Correct
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TODO Choose a feature set and model selector</span>
@@ -17991,7 +17996,7 @@ Video  Recognized                                                    Correct
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TODO Choose a feature set and model selector</span>
@@ -18016,50 +18021,50 @@ Video  Recognized                                                    Correct
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
-**** WER = 0.47191011235955055
-Total correct: 94 out of 178
+**** WER = 0.4157303370786517
+Total correct: 104 out of 178
 Video  Recognized                                                    Correct
 =====================================================================================================
     2: JOHN WRITE HOMEWORK                                           JOHN WRITE HOMEWORK
-    7: JOHN *TOY *IX *TOY                                            JOHN CAN GO CAN
+    7: JOHN *CAR GO *CAR                                             JOHN CAN GO CAN
    12: JOHN CAN *GO1 CAN                                             JOHN CAN GO CAN
-   21: JOHN *HOMEWORK WONT *MARY *CAR *CAR *FUTURE *MARY             JOHN FISH WONT EAT BUT CAN EAT CHICKEN
-   25: JOHN *JOHN IX *JOHN IX                                        JOHN LIKE IX IX IX
-   28: JOHN *JOHN IX *JOHN IX                                        JOHN LIKE IX IX IX
-   30: JOHN LIKE *MARY *LIKE *SHOOT                                  JOHN LIKE IX IX IX
-   36: MARY *MARY *GIRL *SHOOT *MARY *MARY                           MARY VEGETABLE KNOW IX LIKE CORN1
-   40: *MARY IX *CORN MARY *MARY                                     JOHN IX THINK MARY LOVE
+   21: JOHN *GIVE1 WONT *JOHN *CAR *CAR *FUTURE *MARY                JOHN FISH WONT EAT BUT CAN EAT CHICKEN
+   25: JOHN LIKE *LOVE IX *LOVE                                      JOHN LIKE IX IX IX
+   28: JOHN *IX IX *LIKE IX                                          JOHN LIKE IX IX IX
+   30: JOHN LIKE *MARY *MARY IX                                      JOHN LIKE IX IX IX
+   36: MARY *JOHN *GIRL *GIVE *MARY *MARY                            MARY VEGETABLE KNOW IX LIKE CORN1
+   40: JOHN IX *CORN MARY *MARY                                      JOHN IX THINK MARY LOVE
    43: JOHN *POSS BUY HOUSE                                          JOHN MUST BUY HOUSE
-   50: *JOHN *PREFER BUY CAR SHOULD                                  FUTURE JOHN BUY CAR SHOULD
-   54: JOHN SHOULD *WHO BUY HOUSE                                    JOHN SHOULD NOT BUY HOUSE
-   57: *MARY *JOHN *IX *IX                                           JOHN DECIDE VISIT MARY
-   67: JOHN *IX NOT BUY HOUSE                                        JOHN FUTURE NOT BUY HOUSE
-   71: JOHN *IX VISIT *VISIT                                         JOHN WILL VISIT MARY
+   50: *JOHN *PREFER BUY CAR *JOHN                                   FUTURE JOHN BUY CAR SHOULD
+   54: JOHN *FUTURE *FUTURE BUY HOUSE                                JOHN SHOULD NOT BUY HOUSE
+   57: *MARY *JOHN VISIT MARY                                        JOHN DECIDE VISIT MARY
+   67: JOHN FUTURE NOT BUY HOUSE                                     JOHN FUTURE NOT BUY HOUSE
+   71: JOHN *SOMETHING-ONE VISIT MARY                                JOHN WILL VISIT MARY
    74: JOHN *MARY *IX MARY                                           JOHN NOT VISIT MARY
    77: *JOHN BLAME MARY                                              ANN BLAME MARY
-   84: *JOHN *GIVE1 *CHICAGO BOOK                                    IX-1P FIND SOMETHING-ONE BOOK
-   89: *MARY IX *IX *IX IX NEW COAT                                  JOHN IX GIVE MAN IX NEW COAT
-   90: *MARY *IX IX *IX *IX BOOK                                     JOHN GIVE IX SOMETHING-ONE WOMAN BOOK
-   92: JOHN GIVE IX *IX WOMAN BOOK                                   JOHN GIVE IX SOMETHING-ONE WOMAN BOOK
+   84: *MARY *GIVE1 *JOHN BOOK                                       IX-1P FIND SOMETHING-ONE BOOK
+   89: JOHN *JOHN *IX *IX IX NEW COAT                                JOHN IX GIVE MAN IX NEW COAT
+   90: JOHN *IX IX *IX WOMAN BOOK                                    JOHN GIVE IX SOMETHING-ONE WOMAN BOOK
+   92: JOHN *WOMAN IX *IX WOMAN BOOK                                 JOHN GIVE IX SOMETHING-ONE WOMAN BOOK
   100: POSS NEW CAR BREAK-DOWN                                       POSS NEW CAR BREAK-DOWN
-  105: JOHN *WHO                                                     JOHN LEG
-  107: *MARY *IX *ARRIVE *IX *JOHN                                   JOHN POSS FRIEND HAVE CANDY
+  105: JOHN *SEE                                                     JOHN LEG
+  107: JOHN *IX *ARRIVE *IX *JOHN                                    JOHN POSS FRIEND HAVE CANDY
   108: *JOHN ARRIVE                                                  WOMAN ARRIVE
-  113: *JOHN CAR *IX *MARY *BUY1                                     IX CAR BLUE SUE BUY
+  113: IX CAR *JOHN *JOHN *BUY1                                      IX CAR BLUE SUE BUY
   119: *JOHN *BUY1 IX CAR *IX                                        SUE BUY IX CAR BLUE
-  122: JOHN READ BOOK                                                JOHN READ BOOK
-  139: *IX *BUY1 WHAT YESTERDAY BOOK                                 JOHN BUY WHAT YESTERDAY BOOK
+  122: JOHN *GIVE1 BOOK                                              JOHN READ BOOK
+  139: JOHN *BUY1 WHAT *WHAT BOOK                                    JOHN BUY WHAT YESTERDAY BOOK
   142: JOHN BUY YESTERDAY WHAT BOOK                                  JOHN BUY YESTERDAY WHAT BOOK
-  158: LOVE *MARY WHO                                                LOVE JOHN WHO
-  167: *MARY *SOMETHING-ONE *MARY LOVE MARY                          JOHN IX SAY LOVE MARY
-  171: *MARY *JOHN BLAME                                             JOHN MARY BLAME
-  174: PEOPLE GROUP GIVE1 *JOHN TOY                                  PEOPLE GROUP GIVE1 JANA TOY
+  158: LOVE *MARY *MARY                                              LOVE JOHN WHO
+  167: JOHN IX *IX LOVE MARY                                         JOHN IX SAY LOVE MARY
+  171: JOHN *JOHN BLAME                                              JOHN MARY BLAME
+  174: PEOPLE GROUP GIVE1 *JOHN *CAN                                 PEOPLE GROUP GIVE1 JANA TOY
   181: JOHN ARRIVE                                                   JOHN ARRIVE
   184: *IX BOY *GIVE1 TEACHER APPLE                                  ALL BOY GIVE TEACHER APPLE
-  189: *MARY *SOMETHING-ONE *IX BOX                                  JOHN GIVE GIRL BOX
-  193: JOHN *IX *IX BOX                                              JOHN GIVE GIRL BOX
-  199: *JOHN CHOCOLATE *MARY                                         LIKE CHOCOLATE WHO
-  201: JOHN *THINK MARY *WOMAN BUY HOUSE                             JOHN TELL MARY IX-1P BUY HOUSE
+  189: JOHN *POSS *VISIT BOX                                         JOHN GIVE GIRL BOX
+  193: JOHN *POSS GIRL BOX                                           JOHN GIVE GIRL BOX
+  199: *JOHN CHOCOLATE WHO                                           LIKE CHOCOLATE WHO
+  201: JOHN *FUTURE *IX *WOMAN BUY HOUSE                             JOHN TELL MARY IX-1P BUY HOUSE
 </pre>
 </div>
 </div>
@@ -18095,8 +18100,8 @@ Video  Recognized                                                    Correct
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
-**** WER = 0.4943820224719101
-Total correct: 90 out of 178
+**** WER = 0.5
+Total correct: 89 out of 178
 Video  Recognized                                                    Correct
 =====================================================================================================
     2: JOHN WRITE HOMEWORK                                           JOHN WRITE HOMEWORK
@@ -18117,7 +18122,7 @@ Video  Recognized                                                    Correct
    74: JOHN *MARY *IX MARY                                           JOHN NOT VISIT MARY
    77: *JOHN BLAME MARY                                              ANN BLAME MARY
    84: *MARY *GIVE1 *JOHN BOOK                                       IX-1P FIND SOMETHING-ONE BOOK
-   89: JOHN *GIVE *IX *IX IX NEW COAT                                JOHN IX GIVE MAN IX NEW COAT
+   89: JOHN *GIVE *IX *IX IX NEW *BOOK                               JOHN IX GIVE MAN IX NEW COAT
    90: JOHN *IX IX *IX WOMAN BOOK                                    JOHN GIVE IX SOMETHING-ONE WOMAN BOOK
    92: JOHN GIVE IX *IX *IX BOOK                                     JOHN GIVE IX SOMETHING-ONE WOMAN BOOK
   100: POSS NEW CAR BREAK-DOWN                                       POSS NEW CAR BREAK-DOWN
@@ -18127,7 +18132,7 @@ Video  Recognized                                                    Correct
   113: IX CAR *JOHN *JOHN *LOVE                                      IX CAR BLUE SUE BUY
   119: *JOHN *BUY1 IX CAR *IX                                        SUE BUY IX CAR BLUE
   122: JOHN *GIVE1 BOOK                                              JOHN READ BOOK
-  139: JOHN *ARRIVE WHAT *MARY BOOK                                  JOHN BUY WHAT YESTERDAY BOOK
+  139: JOHN *ARRIVE WHAT *WHAT BOOK                                  JOHN BUY WHAT YESTERDAY BOOK
   142: JOHN BUY YESTERDAY WHAT BOOK                                  JOHN BUY YESTERDAY WHAT BOOK
   158: LOVE *MARY *MARY                                              LOVE JOHN WHO
   167: JOHN IX *IX LOVE MARY                                         JOHN IX SAY LOVE MARY
@@ -18171,10 +18176,9 @@ Video  Recognized                                                    Correct
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Question 3:</strong>  Summarize the error results from three combinations of features and model selectors.  What was the "best" combination and why?  What additional information might we use to improve our WER?  For more insight on improving WER, take a look at the introduction to Part 4.</p>
-<p><strong>Answer 3:</strong></p>
+<h1 id="Question-3:--Summarize-the-error-results-from-three-combinations-of-features-and-model-selectors.--What-was-the-&quot;best&quot;-combination-and-why?--What-additional-information-might-we-use-to-improve-our-WER?--For-more-insight-on-improving-WER,-take-a-look-at-the-introduction-to-Part-4."><strong>Question 3:</strong>  Summarize the error results from three combinations of features and model selectors.  What was the "best" combination and why?  What additional information might we use to improve our WER?  For more insight on improving WER, take a look at the introduction to Part 4.<a class="anchor-link" href="#Question-3:--Summarize-the-error-results-from-three-combinations-of-features-and-model-selectors.--What-was-the-&quot;best&quot;-combination-and-why?--What-additional-information-might-we-use-to-improve-our-WER?--For-more-insight-on-improving-WER,-take-a-look-at-the-introduction-to-Part-4.">&#182;</a></h1><p><strong>Answer 3:</strong></p>
 <p>In this submission, each of the implemented model selector was implemented with different set of features. The best performing feature sets were then selected for inclusion in above (notebook) cells.</p>
-<p>The WER for CV, BIC and DIC are 0.52, 0.47 and 0.49 respectively. Although the results are satisfactory per the requirement of this assignment. Some of the models were not properly trained due to an error with the HMM learn library, which resulted in certain models with very high value of stages N.</p>
+<p>The WER for CV, BIC and DIC are 0.52, 0.41 and 0.5 respectively. Although the results are satisfactory per the requirement of this assignment. Some of the models were not properly trained due to an error with the HMM learn library, which resulted in certain models with very high value of stages N.</p>
 <p>Although DIC was expected to have the best theorical performance among the methods, in this particular instance, BIC yielded the best practical performance.</p>
 <p>In this submission, we only calculate the probabilities of the words in isolation. In natural language processing, we can use the relationship between words in the same sentence to further improve the accuracy of the preduction, by combining the probability of the individual words with the probabilities of combination of words (N-gram)</p>
 
@@ -18214,7 +18218,7 @@ Video  Recognized                                                    Correct
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>..
 ----------------------------------------------------------------------
-Ran 2 tests in 30.706s
+Ran 2 tests in 26.367s
 
 OK
 </pre>
@@ -18318,7 +18322,7 @@ our results with the class!</p>
       <td>-5933.286749</td>
       <td>-577.788434</td>
       <td>-98401.411916</td>
-      <td>-781.175116</td>
+      <td>-778.634045</td>
       <td>-384.616125</td>
       <td>-1.609784e+05</td>
       <td>-1285.810186</td>
@@ -18342,7 +18346,7 @@ our results with the class!</p>
       <td>-801.433339</td>
       <td>-777.127148</td>
       <td>-50160.156591</td>
-      <td>-577.150448</td>
+      <td>-736.810967</td>
       <td>-995.848034</td>
       <td>-1.162262e+06</td>
       <td>-3832.430253</td>
@@ -18366,7 +18370,7 @@ our results with the class!</p>
       <td>-2531.852522</td>
       <td>-1411.991542</td>
       <td>-104739.886168</td>
-      <td>-1231.034860</td>
+      <td>-1489.439683</td>
       <td>-1297.196020</td>
       <td>-1.375344e+06</td>
       <td>-3754.452253</td>
@@ -18390,7 +18394,7 @@ our results with the class!</p>
       <td>-9443.079520</td>
       <td>-903.639455</td>
       <td>-683070.682651</td>
-      <td>-972.148939</td>
+      <td>-617.827607</td>
       <td>-672.509124</td>
       <td>-1.645743e+05</td>
       <td>-1233.194583</td>
@@ -18414,7 +18418,7 @@ our results with the class!</p>
       <td>-997.511488</td>
       <td>-174.207114</td>
       <td>-106113.268313</td>
-      <td>-212.735669</td>
+      <td>-247.577960</td>
       <td>-485.717794</td>
       <td>-2.555403e+05</td>
       <td>-6878.613408</td>
